@@ -1,0 +1,88 @@
+.app {
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-header {
+    background-color: #1a1a1a;
+    padding: 20px;
+    color: white;
+    border-bottom: 1px solid #333;
+}
+
+.app-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #61dafb;
+}
+
+.app-header p {
+    font-size: 1.2rem;
+    color: #888;
+}
+
+.app-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.app-main p {
+    font-size: 1.5rem;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.example-component {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+.example-component h3 {
+    color: #61dafb;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.button-group button {
+    padding: 10px 20px;
+    background-color: #61dafb;
+    color: #1a1a1a;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.button-group button:hover {
+    background-color: #4fa8c7;
+}
+
+.file-info {
+    padding: 10px;
+    background-color: #333;
+    border-radius: 4px;
+    border-left: 3px solid #61dafb;
+}
+
+.file-info p {
+    margin: 0;
+    color: #ccc;
+    font-size: 0.9rem;
+}

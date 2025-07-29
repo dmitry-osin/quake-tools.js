@@ -1,0 +1,60 @@
+{
+    "name": "quake-tools.js",
+    "version": "1.0.0",
+    "description": "Quake Tools",
+    "main": "dist/electron/app.js",
+    "author": "Dmitry Osin <d@osin.pro>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dmitry-osin/quake-tools.js"
+    },
+    "scripts": {
+        "dev": "yarn build:electron && concurrently \"yarn dev:vite\" \"yarn dev:electron\"",
+        "dev:vite": "vite --config vite.config.mjs",
+        "dev:electron": "wait-on tcp:5173 && electron .",
+        "build": "yarn build:vite && yarn build:electron",
+        "build:vite": "vite build --config vite.config.mjs",
+        "build:electron": "node scripts/build-electron.js",
+        "preview": "vite preview --config vite.config.mjs",
+        "type-check": "tsc --noEmit",
+        "start": "yarn build:vite && yarn build:electron && electron ."
+    },
+    "dependencies": {
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "electron-settings": "^4.0.2"
+    },
+    "devDependencies": {
+        "@types/react": "^18.2.43",
+        "@types/react-dom": "^18.2.17",
+        "@typescript-eslint/eslint-plugin": "^6.14.0",
+        "@typescript-eslint/parser": "^6.14.0",
+        "@vitejs/plugin-react": "^4.2.1",
+        "concurrently": "^8.2.2",
+        "electron": "^27.1.3",
+        "electron-builder": "^24.6.4",
+        "esbuild": "^0.19.8",
+        "eslint": "^8.55.0",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-react-refresh": "^0.4.5",
+        "typescript": "^5.2.2",
+        "vite": "^5.0.8",
+        "wait-on": "^7.2.0"
+    },
+    "build": {
+        "appId": "pro.osin.tools.quake-tools",
+        "productName": "Quake Tools",
+        "directories": {
+            "output": "release"
+        },
+        "files": [
+            "dist/**/*",
+            "node_modules/**/*"
+        ],
+        "win": {
+            "target": "nsis",
+            "icon": "src/ui/assets/icon.ico"
+        }
+    }
+}
