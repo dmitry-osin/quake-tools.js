@@ -18,11 +18,12 @@ body {
 
 #root {
   height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
 }
 
-#app img {
+img {
   -webkit-user-drag: none;
   pointer-events: auto;
 }

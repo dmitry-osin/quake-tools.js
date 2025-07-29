@@ -1,4 +1,4 @@
-const { build } = require('esbuild')
+const { build, context } = require('esbuild')
 const path = require('path')
 
 async function buildElectron() {
@@ -36,4 +36,47 @@ async function buildElectron() {
     }
 }
 
-buildElectron() 
+async function watchElectron() {
+    try {
+        // Build main process with watch
+        const mainContext = await context({
+            entryPoints: ['src/electron/app.ts'],
+            bundle: true,
+            platform: 'node',
+            target: 'node22',
+            outfile: 'dist/electron/app.js',
+            external: ['electron'],
+            format: 'cjs',
+            sourcemap: true,
+            minify: process.env.NODE_ENV === 'production'
+        })
+
+        // Build preload script with watch
+        const preloadContext = await context({
+            entryPoints: ['src/electron/preload.ts'],
+            bundle: true,
+            platform: 'node',
+            target: 'node22',
+            outfile: 'dist/electron/preload.js',
+            external: ['electron'],
+            format: 'cjs',
+            sourcemap: true,
+            minify: process.env.NODE_ENV === 'production'
+        })
+
+        await mainContext.watch()
+        await preloadContext.watch()
+
+        console.log('🔍 Watching Electron files for changes...')
+    } catch (error) {
+        console.error('❌ Electron watch error:', error)
+        process.exit(1)
+    }
+}
+
+// Check if watch mode is requested
+if (process.argv.includes('--watch')) {
+    watchElectron()
+} else {
+    buildElectron()
+} 

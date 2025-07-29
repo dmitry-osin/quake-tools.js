@@ -13,8 +13,8 @@ app.disableHardwareAcceleration()
 function createWindow(): void {
     // Create browser window
     mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
+        width: 900,
+        height: 1000,
         resizable: false,
         maximizable: false,
         webPreferences: {
@@ -29,7 +29,20 @@ function createWindow(): void {
     // Load the application
     if (isDev) {
         mainWindow.loadURL('http://localhost:5173')
-        mainWindow.webContents.openDevTools()
+
+        // Open DevTools with error handling
+        mainWindow.webContents.once('did-finish-load', () => {
+            mainWindow?.webContents.openDevTools()
+        })
+
+        // Handle DevTools errors
+        mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+            if (level === 3 && message.includes('Failed to fetch')) {
+                // Ignore DevTools fetch errors
+                return
+            }
+            console.log(`[Renderer] ${message}`)
+        })
     } else {
         mainWindow.loadFile(path.join(__dirname, '../ui/index.html'))
     }
@@ -42,6 +55,11 @@ function createWindow(): void {
     // Handle window close
     mainWindow.on('closed', () => {
         mainWindow = null
+    })
+
+    // Handle load errors
+    mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+        console.error(`Failed to load: ${validatedURL}`, errorDescription)
     })
 }
 
@@ -111,32 +129,7 @@ function setupIpcHandlers(): void {
 // Create application menu
 function createMenu(): void {
     const template: Electron.MenuItemConstructorOptions[] = [
-        {
-            label: 'File',
-            submenu: [
-                {
-                    label: 'Exit',
-                    accelerator: 'CmdOrCtrl+Q',
-                    click: () => {
-                        app.quit()
-                    }
-                }
-            ]
-        },
-        {
-            label: 'View',
-            submenu: [
-                { role: 'reload' },
-                { role: 'forceReload' },
-                { role: 'toggleDevTools' },
-                { type: 'separator' },
-                { role: 'resetZoom' },
-                { role: 'zoomIn' },
-                { role: 'zoomOut' },
-                { type: 'separator' },
-                { role: 'togglefullscreen' }
-            ]
-        }
+
     ]
 
     const menu = Menu.buildFromTemplate(template)
@@ -171,4 +164,7 @@ process.on('uncaughtException', (error) => {
 
 process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason)
-}) 
+})
+
+// Suppress DevTools warnings
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true' 
