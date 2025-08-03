@@ -184,6 +184,18 @@ function stopTimer(timer: TimerState, window: BrowserWindow | null, manual: bool
     } else {
         sendTimerEvent('timer-stop', timer, window)
     }
+
+    if (timer.name === 'MH') {
+        megaHealthTimer = null
+    } else if (timer.name === 'RA') {
+        redArmorTimer = null
+    } else if (timer.name === 'YA') {
+        yellowArmorTimer = null
+    } else if (timer.name === 'YA2') {
+        yellowArmorTimerTwo = null
+    } else if (timer.name === 'YA3') {
+        yellowArmorTimerThree = null
+    }
 }
 
 
@@ -203,7 +215,6 @@ function registerHotkeys(): void {
     globalShortcut.register('1', () => {
         if (megaHealthTimer) {
             stopTimer(megaHealthTimer, mainWindow, true)
-            megaHealthTimer = null
         } else {
             megaHealthTimer = startTimer('MH', mainWindow)
         }
@@ -212,7 +223,6 @@ function registerHotkeys(): void {
     globalShortcut.register('2', () => {
         if (redArmorTimer) {
             stopTimer(redArmorTimer, mainWindow, true)
-            redArmorTimer = null
         } else {
             redArmorTimer = startTimer('RA', mainWindow)
         }
@@ -221,7 +231,6 @@ function registerHotkeys(): void {
     globalShortcut.register('3', () => {
         if (yellowArmorTimer) {
             stopTimer(yellowArmorTimer, mainWindow, true)
-            yellowArmorTimer = null
         } else {
             yellowArmorTimer = startTimer('YA', mainWindow)
         }
@@ -230,7 +239,6 @@ function registerHotkeys(): void {
     globalShortcut.register('4', () => {
         if (yellowArmorTimerTwo) {
             stopTimer(yellowArmorTimerTwo, mainWindow, true)
-            yellowArmorTimerTwo = null
         } else {
             yellowArmorTimerTwo = startTimer('YA2', mainWindow)
         }
@@ -239,7 +247,6 @@ function registerHotkeys(): void {
     globalShortcut.register('5', () => {
         if (yellowArmorTimerThree) {
             stopTimer(yellowArmorTimerThree, mainWindow, true)
-            yellowArmorTimerThree = null
         } else {
             yellowArmorTimerThree = startTimer('YA3', mainWindow)
         }
