@@ -3,7 +3,7 @@ import './App.css'
 import styled from 'styled-components';
 import TimerComponent from './TimerComponent';
 import MainTimerComponent from './MainTimerComponent';
-import { Cascader } from 'antd';
+import { Button, Cascader, Switch } from 'antd';
 
 const megaHealth = new URL("../assets/mh.png", import.meta.url).href
 const redArmor = new URL("../assets/ra.png", import.meta.url).href
@@ -49,9 +49,27 @@ const SmallHeader = styled.h2`
 `;
 
 const MapPreset = styled(Cascader)`
-  width: 97.5%;
   margin-bottom: 35px;
   font-weight: bold;
+`;
+
+const OptionsPanel = styled.div`
+  display: flex;
+  width: 97%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+`;
+
+const OptionsButton = styled(Button)`
+  margin-top: -40px;
+`;
+
+const OnTopPanel = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: -40px;
 `;
 
 interface Map {
@@ -151,6 +169,51 @@ const App: React.FC = () => {
   const [selectedMap, setSelectedMap] = useState<string[]>(['bloodrun']);
   const [yellowArmorCount, setYellowArmorCount] = useState(2);
 
+  useEffect(() => {
+    if (!window.timers) return
+
+    window.timers.onTimerTick((state) => {
+      if (state.name === 'MH') {
+        setMegaHealthTimer(state.timeLeft && state.timeLeft > 0 ? state.timeLeft : 0)
+      } else if (state.name === 'RA') {
+        setRedArmorTimer(state.timeLeft && state.timeLeft > 0 ? state.timeLeft : 0)
+      } else if (state.name === 'YA') {
+        setYellowArmorTimer(state.timeLeft && state.timeLeft > 0 ? state.timeLeft : 0)
+      } else if (state.name === 'YA2') {
+        setYellowArmorTimerTwo(state.timeLeft && state.timeLeft > 0 ? state.timeLeft : 0)
+      } else if (state.name === 'YA3') {
+        setYellowArmorTimerThree(state.timeLeft && state.timeLeft > 0 ? state.timeLeft : 0)
+      }
+    })
+
+    window.timers.onTimerStop((state) => {
+      if (state.name === 'MH') {
+        setMegaHealthTimer(0)
+      } else if (state.name === 'RA') {
+        setRedArmorTimer(0)
+      } else if (state.name === 'YA') {
+        setYellowArmorTimer(0)
+      } else if (state.name === 'YA2') {
+        setYellowArmorTimerTwo(0)
+      } else if (state.name === 'YA3') {
+        setYellowArmorTimerThree(0)
+      }
+    })
+
+    window.timers.onTimerReset((state) => {
+      if (state.name === 'MH') {
+        setMegaHealthTimer(0)
+      } else if (state.name === 'RA') {
+        setRedArmorTimer(0)
+      } else if (state.name === 'YA') {
+        setYellowArmorTimer(0)
+      } else if (state.name === 'YA2') {
+        setYellowArmorTimerTwo(0)
+      } else if (state.name === 'YA3') {
+        setYellowArmorTimerThree(0)
+      }
+    })
+  }, [])
 
   function isTimerReady(timer: number) {
     return timer === 0;
@@ -166,13 +229,22 @@ const App: React.FC = () => {
 
         <Header>Quake Tools</Header>
         <SmallHeader>by AktiveHateXXX</SmallHeader>
-        <MapPreset size='large' defaultValue={selectedMap}
-          options={maps}
-          onChange={(value) => {
-            setSelectedMap(value as string[]);
-            setYellowArmorCount(getYellowArmorCount(value as string[]));
-          }}
-        />
+        <OptionsPanel>
+          <MapPreset size='large' defaultValue={selectedMap}
+            options={maps}
+            onChange={(value) => {
+              setSelectedMap(value as string[]);
+              setYellowArmorCount(getYellowArmorCount(value as string[]));
+            }}
+          />
+          <OptionsButton type='primary' size='large'>
+            Options
+          </OptionsButton>
+          <OnTopPanel>
+            <Switch title='Hold window on top' />
+            <span>Hold window on top</span>
+          </OnTopPanel>
+        </OptionsPanel>
 
         <TimerContainer>
           <MainTimerComponent title="MegaHealth"

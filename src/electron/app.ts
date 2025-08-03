@@ -1,10 +1,17 @@
-import { app, BrowserWindow, Menu, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, Menu, ipcMain, globalShortcut } from 'electron'
 import * as path from 'path'
 import * as settings from 'electron-settings'
+import { TimerEvent, TimerName, TimerState } from '../types/global'
 
 let mainWindow: BrowserWindow | null = null
 
 const isDev = process.env.NODE_ENV === 'development'
+
+let megaHealthTimer: TimerState | null = null
+let redArmorTimer: TimerState | null = null
+let yellowArmorTimer: TimerState | null = null
+let yellowArmorTimerTwo: TimerState | null = null
+let yellowArmorTimerThree: TimerState | null = null
 
 // Disable hardware acceleration
 // To avoid the errors like this: [23032:0729/042126.831:ERROR:gpu_process_host.cc(991)] GPU process exited unexpectedly: exit_code=-1073740791
@@ -74,40 +81,6 @@ function setupIpcHandlers(): void {
         await settings.set(key, value)
     })
 
-    // File system handlers
-    ipcMain.handle('open-file', async () => {
-        const result = await dialog.showOpenDialog(mainWindow!, {
-            properties: ['openFile'],
-            filters: [
-                { name: 'All Files', extensions: ['*'] },
-                { name: 'Text Files', extensions: ['txt', 'md'] },
-                { name: 'JavaScript Files', extensions: ['js', 'ts'] }
-            ]
-        })
-
-        if (!result.canceled && result.filePaths.length > 0) {
-            return result.filePaths[0]
-        }
-        return null
-    })
-
-    ipcMain.handle('save-file', async (_, data: any) => {
-        const result = await dialog.showSaveDialog(mainWindow!, {
-            filters: [
-                { name: 'JSON Files', extensions: ['json'] },
-                { name: 'Text Files', extensions: ['txt'] },
-                { name: 'All Files', extensions: ['*'] }
-            ]
-        })
-
-        if (!result.canceled && result.filePath) {
-            // Here you would implement the actual file saving logic
-            console.log('Saving file to:', result.filePath, 'with data:', data)
-            return result.filePath
-        }
-        return null
-    })
-
     // Window control handlers
     ipcMain.handle('minimize-window', () => {
         mainWindow?.minimize()
@@ -141,6 +114,7 @@ app.whenReady().then(() => {
     createWindow()
     setupIpcHandlers()
     createMenu()
+    registerHotkeys()
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
@@ -167,4 +141,107 @@ process.on('unhandledRejection', (reason, promise) => {
 })
 
 // Suppress DevTools warnings
-process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true' 
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
+
+function startTimer(name: TimerName, window: BrowserWindow | null): TimerState | null {
+    if (!window) return null
+
+    let timer: TimerState = {
+        name: name,
+        interval: null as NodeJS.Timeout | null,
+        timeLeft: name === 'MH' ? 35 : 25,
+        running: true
+    }
+
+    timer.interval = setInterval(() => {
+        timer.timeLeft--
+
+        sendTimerEvent('timer-tick', timer, window)
+
+        if (timer.timeLeft <= 0 && timer.interval) {
+            stopTimer(timer, window)
+            return null
+        }
+        return timer
+    }, 1000)
+
+    sendTimerEvent('timer-tick', timer, window)
+    return timer
+}
+
+function stopTimer(timer: TimerState, window: BrowserWindow | null, manual: boolean = false): void {
+    if (!window || !timer.interval) return
+
+    clearInterval(timer.interval)
+    timer.interval = null
+    timer.running = false
+    timer.timeLeft = 0
+
+    if (manual) {
+        sendTimerEvent('timer-reset', timer, window)
+    } else {
+        sendTimerEvent('timer-stop', timer, window)
+    }
+}
+
+
+function sendTimerEvent(name: TimerEvent, state: TimerState, window: BrowserWindow | null): void {
+    if (!window) return
+
+    window.webContents.send(name, {
+        name: state.name,
+        timeLeft: state.timeLeft,
+        running: state.running
+    })
+}
+
+function registerHotkeys(): void {
+    globalShortcut.unregisterAll()
+
+    globalShortcut.register('1', () => {
+        if (megaHealthTimer) {
+            stopTimer(megaHealthTimer, mainWindow, true)
+            megaHealthTimer = null
+        } else {
+            megaHealthTimer = startTimer('MH', mainWindow)
+        }
+    })
+
+    globalShortcut.register('2', () => {
+        if (redArmorTimer) {
+            stopTimer(redArmorTimer, mainWindow, true)
+            redArmorTimer = null
+        } else {
+            redArmorTimer = startTimer('RA', mainWindow)
+        }
+    })
+
+    globalShortcut.register('3', () => {
+        if (yellowArmorTimer) {
+            stopTimer(yellowArmorTimer, mainWindow, true)
+            yellowArmorTimer = null
+        } else {
+            yellowArmorTimer = startTimer('YA', mainWindow)
+        }
+    })
+
+    globalShortcut.register('4', () => {
+        if (yellowArmorTimerTwo) {
+            stopTimer(yellowArmorTimerTwo, mainWindow, true)
+            yellowArmorTimerTwo = null
+        } else {
+            yellowArmorTimerTwo = startTimer('YA2', mainWindow)
+        }
+    })
+
+    globalShortcut.register('5', () => {
+        if (yellowArmorTimerThree) {
+            stopTimer(yellowArmorTimerThree, mainWindow, true)
+            yellowArmorTimerThree = null
+        } else {
+            yellowArmorTimerThree = startTimer('YA3', mainWindow)
+        }
+    })
+}
+
+

@@ -20,19 +20,25 @@ declare module '*.svg' {
   export default src;
 }
 
+type TimerName = 'MH' | 'RA' | 'YA' | 'YA2' | 'YA3';
+
+type TimerEvent = 'timer-tick' | 'timer-stop' | 'timer-reset';
+
+type TimerState = {
+  name: TimerName;
+  interval: NodeJS.Timeout | null;
+  timeLeft: number;
+  running: boolean;
+};
+
 declare global {
   interface Window {
-    electronAPI: {
-      getSettings: (key: string) => Promise<any>
-      setSettings: (key: string, value: any) => Promise<void>
-      openFile: () => Promise<string | null>
-      saveFile: (data: any) => Promise<void>
-      minimize: () => Promise<void>
-      maximize: () => Promise<void>
-      close: () => Promise<void>
-      onSettingsChanged: (callback: (key: string, value: any) => void) => void
+    timers?: {
+      onTimerTick: (callback: (state: TimerState) => void) => void
+      onTimerStop: (callback: (state: TimerState) => void) => void
+      onTimerReset: (callback: (state: TimerState) => void) => void
     }
   }
 }
 
-export { } 
+export { TimerState, TimerName, TimerEvent } 

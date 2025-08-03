@@ -1,24 +1,8 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import { TimerState } from '../types/global'
 
-// Expose API for renderer process
-contextBridge.exposeInMainWorld('electronAPI', {
-    // Settings methods
-    getSettings: (key: string) => ipcRenderer.invoke('get-settings', key),
-    setSettings: (key: string, value: any) => ipcRenderer.invoke('set-settings', key, value),
-
-    // Events
-    onSettingsChanged: (callback: (key: string, value: any) => void) => {
-        ipcRenderer.on('settings-changed', (_, key, value) => callback(key, value))
-    }
+contextBridge.exposeInMainWorld('timers', {
+    onTimerTick: (callback: (state: TimerState) => void) => ipcRenderer.on('timer-tick', (_, state) => callback(state as TimerState)),
+    onTimerStop: (callback: (state: TimerState) => void) => ipcRenderer.on('timer-stop', (_, state) => callback(state as TimerState)),
+    onTimerReset: (callback: (state: TimerState) => void) => ipcRenderer.on('timer-reset', (_, state) => callback(state as TimerState))
 })
-
-// TypeScript types
-declare global {
-    interface Window {
-        electronAPI: {
-            getSettings: (key: string) => Promise<any>
-            setSettings: (key: string, value: any) => Promise<void>
-            onSettingsChanged: (callback: (key: string, value: any) => void) => void
-        }
-    }
-} 
