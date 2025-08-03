@@ -22,6 +22,7 @@
         "start": "yarn build:vite && yarn build:electron && electron ."
     },
     "dependencies": {
+        "@ant-design/icons": "5.x",
         "antd": "^5.26.6",
         "electron-settings": "^4.0.2",
         "react": "^18.2.0",

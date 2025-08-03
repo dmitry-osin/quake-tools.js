@@ -4,10 +4,12 @@ import styled from 'styled-components';
 import TimerComponent from './TimerComponent';
 import MainTimerComponent from './MainTimerComponent';
 import { Button, Cascader, Switch } from 'antd';
+import { BlockOutlined, SettingOutlined } from '@ant-design/icons';
 
 const megaHealth = new URL("../assets/mh.png", import.meta.url).href
 const redArmor = new URL("../assets/ra.png", import.meta.url).href
 const yellowArmor = new URL("../assets/ya.png", import.meta.url).href
+const logo = new URL("../assets/quake-logo-nobg.png", import.meta.url).href
 
 const DarkThemeRoot = styled.div`
   width: 100vw;
@@ -30,13 +32,16 @@ const TimerContainer = styled.div`
   width: 100%;
 `;
 
-const Header = styled.h2`
+const Header = styled.div`
   margin-top: 20px;
   text-align: left;
   margin-bottom: 10px;
   color:rgb(226, 62, 62);
   font-size: 72px;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-transform: uppercase;
 `;
 
@@ -50,6 +55,15 @@ const SmallHeader = styled.h2`
 
 const MapPreset = styled(Cascader)`
   margin-bottom: 35px;
+  font-weight: bold;
+`;
+
+const MapPresetPopup = styled.div`
+  background-color: rgb(162, 43, 33);
+  color: white;
+`;
+
+const MapOptionPopup = styled.div`
   font-weight: bold;
 `;
 
@@ -70,6 +84,19 @@ const OnTopPanel = styled.div`
   align-items: center;
   gap: 10px;
   margin-top: -40px;
+`;
+
+const AppLogoText = styled.span`
+  font-size: 48px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: rgb(162, 43, 33);
+  margin-left: -5px;
+`;
+
+const AppLogoImage = styled.img`
+  width: 100px;
+  height: 100px;
 `;
 
 interface Map {
@@ -227,20 +254,28 @@ const App: React.FC = () => {
     <DarkThemeRoot className="dark-theme-root">
       <AppContainer>
 
-        <Header>Quake Tools</Header>
+        <Header>
+          <AppLogoImage src={logo} alt="Quake Logo" />
+          <AppLogoText>uake Tools</AppLogoText>
+        </Header>
         <SmallHeader>by AktiveHateXXX</SmallHeader>
         <OptionsPanel>
           <MapPreset size='large' defaultValue={selectedMap}
             options={maps}
+            allowClear={false}
+            popupRender={(menu) => <MapPresetPopup>{menu}</MapPresetPopup>}
+            optionRender={(option) => <MapOptionPopup>{option.label}</MapOptionPopup>}
             onChange={(value) => {
               setSelectedMap(value as string[]);
               setYellowArmorCount(getYellowArmorCount(value as string[]));
             }}
           />
           <OptionsButton type='primary' size='large'>
+            <SettingOutlined />
             Options
           </OptionsButton>
           <OnTopPanel>
+            <BlockOutlined style={{ fontSize: '24px' }} />
             <Switch title='Hold window on top' />
             <span>Hold window on top</span>
           </OnTopPanel>

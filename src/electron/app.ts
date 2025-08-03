@@ -13,6 +13,8 @@ let yellowArmorTimer: TimerState | null = null
 let yellowArmorTimerTwo: TimerState | null = null
 let yellowArmorTimerThree: TimerState | null = null
 
+const icon = path.join(process.cwd(), 'src/ui/assets/icon.ico')
+
 // Disable hardware acceleration
 // To avoid the errors like this: [23032:0729/042126.831:ERROR:gpu_process_host.cc(991)] GPU process exited unexpectedly: exit_code=-1073740791
 app.disableHardwareAcceleration()
@@ -29,7 +31,7 @@ function createWindow(): void {
             contextIsolation: true,
             preload: path.join(__dirname, 'preload.js')
         },
-        icon: path.join(__dirname, '../ui/assets/icon.png'),
+        icon: icon,
         show: false
     })
 
