@@ -2,8 +2,8 @@ import { Button, Card, Image } from 'antd';
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components';
 
-const TimerCard = styled(Card) <{ $isDisabled?: boolean }>`
-    background-color: ${props => props.$isDisabled ? 'rgb(200, 200, 200)' : 'rgb(255, 255, 255)'};
+const TimerCard = styled(Card) <{ $isDisabled?: boolean, $color: string }>`
+    background-color: ${props => props.$isDisabled ? 'rgb(200, 200, 200)' : props.$color};
     border-radius: 10px;
     border: 1px solid #222;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
@@ -111,8 +111,16 @@ const TimerComponent: React.FC<TimerComponentProps> = ({ title, image, hotkey, a
         setIsDisabled(disabled);
     }, [disabled]);
 
+    function getTimerColor(value: number) {
+        if (value === 0) return 'rgb(255, 255, 255)';
+        if (value <= 5) return 'rgb(255, 102, 102)';
+        if (value <= 10) return 'rgb(255, 171, 75)';
+        if (value <= 15) return 'rgb(252, 255, 51)';
+        return 'rgb(255, 255, 255)';
+    }
+
     return (
-        <TimerCard $isDisabled={isDisabled}>
+        <TimerCard $isDisabled={isDisabled} $color={getTimerColor(value)}>
             <TimerTitle $isDisabled={isDisabled}>{title}</TimerTitle>
             <TimerImage src={image} width={120} preview={false} alt={alt} />
             <TimerContent>

@@ -3,8 +3,8 @@ import './App.css'
 import styled from 'styled-components';
 import { Card, Image } from 'antd';
 
-const MainTimerCard = styled(Card)`
-    background-color:rgb(255, 255, 255);
+const MainTimerCard = styled(Card) <{ $color: string }>`
+    background-color: ${props => props.$color};
     border-radius: 10px;
     border: 1px solid #222;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
@@ -18,7 +18,7 @@ const MainTimerCard = styled(Card)`
     height: 375px;
     position: relative;
     transition: all 0.3s ease;
-    
+
     &:hover .hover-button {
         opacity: 1;
         visibility: visible;
@@ -74,8 +74,16 @@ interface TimerComponentProps {
 
 const MainTimerComponent: React.FC<TimerComponentProps> = ({ title, image, hotkey, alt, value, ready }) => {
 
+    function getTimerColor(value: number) {
+        if (value === 0) return 'rgb(255, 255, 255)';
+        if (value <= 5) return 'rgb(255, 102, 102)';
+        if (value <= 10) return 'rgb(255, 171, 75)';
+        if (value <= 15) return 'rgb(252, 255, 51)';
+        return 'rgb(255, 255, 255)';
+    }
+
     return (
-        <MainTimerCard>
+        <MainTimerCard $color={getTimerColor(value)}>
             <MainTimerTitle>{title}</MainTimerTitle>
             <MainTimerImage src={image} width={225} preview={false} alt={alt} />
             <MainTimerContent>
