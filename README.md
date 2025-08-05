@@ -16,15 +16,15 @@ Electron application for Quake tools, built with React, TypeScript and Vite.
 ```
 quake-tools.js/
 ├── src/
-│   ├── ui/                    # React application
-│   │   ├── assets/           # Static resources
-│   │   ├── components/       # React components
+│   ├── ui/                  # React application
+│   │   ├── assets/          # Static resources
+│   │   ├── components/      # React components
 │   │   └── styles/          # CSS styles
-│   └── electron/             # Electron application
-│       ├── app.ts           # Main process
+│   └── electron/            # Electron application
+│       ├── application.ts   # Main process
 │       └── preload.ts       # Preload script
-├── dist/                     # Built files
-├── release/                  # Production builds
+├── dist/                    # Built files
+├── release/                 # Production builds
 └── package.json
 ```
 

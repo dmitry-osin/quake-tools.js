@@ -5,11 +5,11 @@ async function buildElectron() {
     try {
         // Build main process
         await build({
-            entryPoints: ['src/electron/app.ts'],
+            entryPoints: ['src/electron/application.ts'],
             bundle: true,
             platform: 'node',
             target: 'node22',
-            outfile: 'dist/electron/app.js',
+            outfile: 'dist/electron/application.js',
             external: ['electron'],
             format: 'cjs',
             sourcemap: true,
@@ -40,11 +40,11 @@ async function watchElectron() {
     try {
         // Build main process with watch
         const mainContext = await context({
-            entryPoints: ['src/electron/app.ts'],
+            entryPoints: ['src/electron/application.ts'],
             bundle: true,
             platform: 'node',
             target: 'node22',
-            outfile: 'dist/electron/app.js',
+            outfile: 'dist/electron/application.js',
             external: ['electron'],
             format: 'cjs',
             sourcemap: true,
