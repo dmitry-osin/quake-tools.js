@@ -1,17 +1,11 @@
 import { app, BrowserWindow, Menu, ipcMain, globalShortcut } from 'electron'
 import * as path from 'path'
 import * as settings from 'electron-settings'
-import { TimerEvent, TimerName, TimerState } from '../types/global'
+import { ExampleEvent, ExampleName, ExampleState } from '../types/global'
 
 let mainWindow: BrowserWindow | null = null
 
 const isDev = process.env.NODE_ENV === 'development'
-
-let megaHealthTimer: TimerState | null = null
-let redArmorTimer: TimerState | null = null
-let yellowArmorTimer: TimerState | null = null
-let yellowArmorTimerTwo: TimerState | null = null
-let yellowArmorTimerThree: TimerState | null = null
 
 const icon = path.join(process.cwd(), 'src/ui/assets/icon.ico')
 
@@ -145,67 +139,18 @@ process.on('unhandledRejection', (reason, promise) => {
 // Suppress DevTools warnings
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
-function startTimer(name: TimerName, window: BrowserWindow | null): TimerState | null {
-    if (!window) return null
+function fireExampleEvent(name: ExampleName, window: BrowserWindow | null): void {
+    if (!window) return
 
-    let timer: TimerState = {
-        name: name,
-        interval: null as NodeJS.Timeout | null,
-        timeLeft: name === 'MH' ? 35 : 25,
-        running: true
-    }
-
-    timer.interval = setInterval(() => {
-        timer.timeLeft--
-
-        sendTimerEvent('timer-tick', timer, window)
-
-        if (timer.timeLeft <= 0 && timer.interval) {
-            stopTimer(timer, window)
-            return null
-        }
-        return timer
-    }, 1000)
-
-    sendTimerEvent('timer-tick', timer, window)
-    return timer
-}
-
-function stopTimer(timer: TimerState, window: BrowserWindow | null, manual: boolean = false): void {
-    if (!window || !timer.interval) return
-
-    clearInterval(timer.interval)
-    timer.interval = null
-    timer.running = false
-    timer.timeLeft = 0
-
-    if (manual) {
-        sendTimerEvent('timer-reset', timer, window)
-    } else {
-        sendTimerEvent('timer-stop', timer, window)
-    }
-
-    if (timer.name === 'MH') {
-        megaHealthTimer = null
-    } else if (timer.name === 'RA') {
-        redArmorTimer = null
-    } else if (timer.name === 'YA') {
-        yellowArmorTimer = null
-    } else if (timer.name === 'YA2') {
-        yellowArmorTimerTwo = null
-    } else if (timer.name === 'YA3') {
-        yellowArmorTimerThree = null
-    }
+    sendExampleEvent('example-update', { name: name }, window)
 }
 
 
-function sendTimerEvent(name: TimerEvent, state: TimerState, window: BrowserWindow | null): void {
+function sendExampleEvent(name: ExampleEvent, state: ExampleState, window: BrowserWindow | null): void {
     if (!window) return
 
     window.webContents.send(name, {
         name: state.name,
-        timeLeft: state.timeLeft,
-        running: state.running
     })
 }
 
@@ -213,43 +158,8 @@ function registerHotkeys(): void {
     globalShortcut.unregisterAll()
 
     globalShortcut.register('1', () => {
-        if (megaHealthTimer) {
-            stopTimer(megaHealthTimer, mainWindow, true)
-        } else {
-            megaHealthTimer = startTimer('MH', mainWindow)
-        }
-    })
-
-    globalShortcut.register('2', () => {
-        if (redArmorTimer) {
-            stopTimer(redArmorTimer, mainWindow, true)
-        } else {
-            redArmorTimer = startTimer('RA', mainWindow)
-        }
-    })
-
-    globalShortcut.register('3', () => {
-        if (yellowArmorTimer) {
-            stopTimer(yellowArmorTimer, mainWindow, true)
-        } else {
-            yellowArmorTimer = startTimer('YA', mainWindow)
-        }
-    })
-
-    globalShortcut.register('4', () => {
-        if (yellowArmorTimerTwo) {
-            stopTimer(yellowArmorTimerTwo, mainWindow, true)
-        } else {
-            yellowArmorTimerTwo = startTimer('YA2', mainWindow)
-        }
-    })
-
-    globalShortcut.register('5', () => {
-        if (yellowArmorTimerThree) {
-            stopTimer(yellowArmorTimerThree, mainWindow, true)
-        } else {
-            yellowArmorTimerThree = startTimer('YA3', mainWindow)
-        }
+        console.log('1')
+        fireExampleEvent('example-1', mainWindow)
     })
 }
 
